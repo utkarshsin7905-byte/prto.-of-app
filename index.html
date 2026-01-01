@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FoodBridge</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <a onclick="showPage('home')">Home</a>
+        <a onclick="showPage('login')">Login</a>
+        <a onclick="logout()">Logout</a>
+    </nav>
+
+    
+        <section id="problem">
+            <h2>The Problem of Food Wastage in Hostel Messes</h2>
+            <img src="https://media.istockphoto.com/id/1405839208/vector/tiny-angry-people-and-giant-hands-throwing-food-in-bin.jpg?s=612x612&w=0&k=20&c=L3OPx-G661VhTaBrejWPJqyA3ficw8LhZHT0LcC0gqA=" alt="Food Waste Illustration" class="problem-img">
+            <p>Every day, tons of nutritious food from hostel messes ends up in bins while many go hungry nearby.</p>
+            <div class="quote">“No food should be wasted when someone is hungry.”</div>
+        </section>
+        <div id="home" class="page active">
+        <div class="hero">
+            <img src="https://www.shutterstock.com/image-vector/food-bank-simple-illustration-concept-260nw-1771307726.jpg" alt="Food Donation Illustration" class="hero-img">
+            <h1>Turn Extra Food into Hope</h1>
+            <p>Connecting hostel messes with NGOs to donate excess food instead of wasting it.</p>
+            <div class="buttons">
+                <button class="button" onclick="checkRoleAndRedirect('mess')">I am a Mess – Donate Food</button>
+                <button class="button" onclick="checkRoleAndRedirect('ngo')">I am an NGO – Collect Food</button>
+            </div>
+        </div>
+
+
+        <section id="solution">
+            <h2>Our Simple 3-Step Solution</h2>
+            <div class="steps">
+                <div class="step">
+                    <img src="https://foodbankofeastalabama.com/wp-content/uploads/2021/07/HomeIcons2-02-1-1024x578.png" alt="Upload Food">
+                    <h3>Step 1: Mess Uploads Details</h3>
+                    <p>Quickly post excess food info.</p>
+                </div>
+                <div class="step">
+                    <img src="https://www.shutterstock.com/image-vector/notification-bell-icon-incoming-inbox-260nw-1667755825.jpg" alt="Notification">
+                    <h3>Step 2: NGOs Get Alerted</h3>
+                    <p>Instant visibility for nearby NGOs.</p>
+                </div>
+                <div class="step">
+                    <img src="https://www.shutterstock.com/image-illustration/food-donation-charity-care-needy-260nw-2618892029.jpg" alt="Helping Hands">
+                    <h3>Step 3: Food Reaches the Needy</h3>
+                    <p>Collected and distributed fast.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Contact: info@foodbridge.com | Making a real social impact, one meal at a time.</p>
+        </footer>
+    </div>
+
+    <!-- Login, Donate, Dashboard pages remain the same as before -->
+    <!-- (Copy-paste from previous code for brevity - only minor style enhancements apply) -->
+
+    <div id="login" class="page">
+        <h2>Login to Get Started</h2>
+        <form id="loginForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required placeholder="your@email.com">
+
+            <label for="role">I am:</label>
+            <select id="role" required>
+                <option value="mess">Hostel Mess Owner</option>
+                <option value="ngo">NGO Representative</option>
+            </select>
+
+            <button type="submit" class="button">Login</button>
+        </form>
+    </div>
+
+    <div id="donate" class="page">
+        <h2>Donate Excess Food</h2>
+        <form id="donateForm">
+            <!-- Form fields same as before -->
+            <label for="messName">Mess / Hostel Name:</label>
+            <input type="text" id="messName" required>
+
+            <label for="location">Location (city / area):</label>
+            <input type="text" id="location" required>
+
+            <label for="foodType">Food Type:</label>
+            <select id="foodType" required>
+                <option value="Rice">Rice</option>
+                <option value="Roti">Roti</option>
+                <option value="Dal">Dal</option>
+                <option value="Sabzi">Sabzi</option>
+
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="quantity">Quantity (plates or kg):</label>
+            <input type="text" id="quantity" required>
+
+            <label for="timeFresh">Fresh for (hours):</label>
+            <input type="number" id="timeFresh" required min="1">
+
+            <label for="contact">Contact Number:</label>
+            <input type="tel" id="contact" required>
+
+            <button type="submit" class="button">Post Food Availability</button>
+        </form>
+        <div id="messConfirmation" class="confirmation" style="display:none;">
+            🎉 Your food donation request has been posted successfully!
+        </div>
+    
+        </div>
+    </div>
+
+    <div id="dashboard" class="page">
+        <h2>Available Food Nearby</h2>
+        <div id="donationsList"></div>
+        <div id="ngoConfirmation" class="confirmation" style="display:none;">
+            ✅ You have accepted this donation. Please contact the mess.<br>🙏 Thank you for reducing food waste!
+        </div>
+    </div>
+
+    <script>
+        // Same JavaScript as before, with small enhancements for animation
+        function getDonations() { return JSON.parse(localStorage.getItem('donations')) || []; }
+        function saveDonations(d) { localStorage.setItem('donations', JSON.stringify(d)); }
+        function getUserRole() { return local
+            +Storage.getItem('role'); }
+        function setUser(e, r) { localStorage.setItem('email', e); localStorage.setItem('role', r); }
+        function logout() { localStorage.clear(); showPage('home'); }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if (id === 'dashboard') loadDonations();
+        }
+
+        function checkRoleAndRedirect(req) {
+            const role = getUserRole();
+            if (!role) { showPage('login'); return; }
+            if (role !== req) { alert('Please login with correct role.'); return; }
+            showPage(req === 'mess' ? 'donate' : 'dashboard');
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', e => {
+            e.preventDefault();
+            setUser(document.getElementById('email').value, document.getElementById('role').value);
+            showPage(getUserRole() === 'mess' ? 'donate' : 'dashboard');
+        });
+
+        document.getElementById('donateForm').addEventListener('submit', e => {
+            e.preventDefault();
+            const donation = {
+                id: Date.now(),
+                messName: document.getElementById('messName').value,
+                location: document.getElementById('location').value,
+                foodType: document.getElementById('foodType').value,
+                quantity: document.getElementById('quantity').value,
+                timeFresh: document.getElementById('timeFresh').value,
+                contact: document.getElementById('contact').value,
+                status: 'available'
+            };
+            let donations = getDonations();
+            donations.push(donation);
+            saveDonations(donations);
+            document.getElementById('donateForm').reset();
+            document.getElementById('messConfirmation').style.display = 'block';
+            setTimeout(() => document.getElementById('messAccepted').style.display = 'block', 6000);
+        });
+
+        function loadDonations() {
+            const donations = getDonations().filter(d => d.status === 'available');
+            const list = document.getElementById('donationsList');
+            list.innerHTML = donations.length === 0 ? '<p>No donations available right now. Check back soon!</p>' : '';
+            donations.forEach(d => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <h3>${d.messName}</h3>
+                    <p><strong>Location:</strong> ${d.location}</p>
+                    <p><strong>Food:</strong> ${d.foodType}</p>
+                    <p><strong>Quantity:</strong> ${d.quantity}</p>
+                    <p><strong>Fresh for:</strong> ${d.timeFresh} hours</p>
+                    <p><strong>Contact:</strong> ${d.contact}</p>
+                    <button onclick="acceptDonation(${d.id})">Accept & Collect</button>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        window.acceptDonation = function(id) {
+            let donations = getDonations();
+            const idx = donations.findIndex(d => d.id === id);
+            if (idx !== -1) {
+                donations[idx].status = 'accepted';
+                saveDonations(donations);
+                loadDonations();
+                const conf = document.getElementById('ngoConfirmation');
+                conf.style.display = 'block';
+                setTimeout(() => conf.style.display = 'none', 8000);
+            }
+        };
+
+        // Auto redirect if logged in
+        if (getUserRole()) showPage(getUserRole() === 'mess' ? 'donate' : 'dashboard');
+    </script>
+</body>
+</html>
